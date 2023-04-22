@@ -6,32 +6,26 @@ export interface UserUI extends User {
   backgroundColor: string;
 }
 
-const random = (min = 1, max = 5) => faker.datatype.number({ min, max });
+export const random = (min = 1, max = 5) => faker.datatype.number({ min, max });
+
+const fakeField = {
+  id: () => faker.datatype.uuid(),
+  fullName: () => faker.name.fullName(),
+  gender: () => faker.name.sex(),
+  personalInformation: () => faker.lorem.lines(5),
+}
 
 const createUser = () => {
-  const id = faker.datatype.uuid();
-  const fullName = faker.name.fullName();
-  const gender = faker.name.sex();
-  const personalInformation = faker.lorem.lines(5);
-  const adress = {
-    country: faker.address.country(),
-    city: faker.address.city(),
-    zip: faker.address.zipCode("#####"),
-  };
-  const finance = {
-    accountName: faker.finance.accountName(),
-    balance: faker.finance.amount(5, 1000, 2, "$"),
-  };
-  const sites = faker.helpers.uniqueArray(faker.internet.domainName, random(2));
+  const id = fakeField.id();
+  const fullName = fakeField.fullName();
+  const gender = fakeField.gender();
+  const personalInformation = fakeField.personalInformation();
 
   return {
     id,
     fullName,
     gender,
-    personalInformation,
-    adress,
-    finance,
-    sites,
+    personalInformation
   };
 };
 
@@ -42,9 +36,19 @@ const createUserArray = () =>
 
 export const replaceRandomUser = (array: User[]) => {
   const randomUserIndex = random(0, array.length - 1);
-  console.log(randomUserIndex);
   array.splice(randomUserIndex, 1, createUser());
+  console.log(`Replace ueser [${randomUserIndex}]`)
   return array;
 };
+
+export const upadteRandomUser = (array: User[]) => {
+  const randomUserIndex = random(0, array.length - 1);
+  const actionFields = ['fullName', 'gender', 'personalInformation'] as const
+  const randomActionIndex = random(0, actionFields.length - 1)
+  const randomActionField = actionFields[randomActionIndex]
+  console.log(`Update user [${randomUserIndex}] - field [${randomActionField}]`)
+  array[randomUserIndex][randomActionField] = fakeField[randomActionField]()
+  return array
+}
 
 export const db = createUserArray();
