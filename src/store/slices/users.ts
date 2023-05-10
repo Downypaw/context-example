@@ -31,11 +31,25 @@ const initialState: UsersState = {
   updateLoading: false,
 };
 
+const defaultSettings = {
+  privacy: false,
+  backgroundColor: "#ffffff",
+};
+
 const getDefaultUserInfo = (user: User) => {
   return {
     ...user,
-    privacy: false,
-    backgroundColor: "#ffffff",
+    ...defaultSettings,
+  };
+};
+
+const updateUserData = (user: User, state: UsersState) => {
+  const storedUser = state.data.find((storedUser) => storedUser.id === user.id);
+  return {
+    ...user,
+    privacy: storedUser?.privacy ?? defaultSettings.privacy,
+    backgroundColor:
+      storedUser?.backgroundColor ?? defaultSettings.backgroundColor,
   };
 };
 
@@ -44,6 +58,7 @@ const modifyUsersInfo = (data: User[]) => {
 };
 
 const updateUsersInfo = (data: User[], state: UsersState) => {
+  console.log(data);
   return data.map((user) => {
     const storedUser = state.data.find(
       (storedUser) => storedUser.id === user.id
@@ -51,7 +66,7 @@ const updateUsersInfo = (data: User[], state: UsersState) => {
     if (!storedUser) {
       return getDefaultUserInfo(user);
     }
-    return storedUser;
+    return updateUserData(user, state);
   });
 };
 
